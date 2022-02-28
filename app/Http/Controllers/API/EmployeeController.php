@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use Illuminate\Support\Facades\DB;
 
 
 class EmployeeController extends Controller
@@ -57,4 +58,20 @@ class EmployeeController extends Controller
         $employee = Employee::destroy($request->id);
         return $employee;
     }
+
+
+    public function search(Request $request){
+        $search = $request->search;
+
+        $employees= DB::table('employees')
+                    ->select('*')
+                    ->where('name', 'LIKE', '%'.$search.'%')
+                    ->orWhere('email', 'LIKE', '%'.$search.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$search.'%')
+                    ->get();
+
+        return $employees;
+
+    }
+
 }
