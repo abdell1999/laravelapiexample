@@ -27,6 +27,7 @@ Route::prefix('employees')->group(function () {
     Route::get('/{id}',[ EmployeeController::class, 'show']);
     Route::put('/{id}',[ EmployeeController::class, 'update']);
     Route::get('/search/{search}',[ EmployeeController::class, 'search']);
+    Route::get('/paginate/{elements}',[ EmployeeController::class, 'pagination']);
 });
 
 

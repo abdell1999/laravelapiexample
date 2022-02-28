@@ -73,5 +73,14 @@ class EmployeeController extends Controller
         return $employees;
 
     }
+    public function pagination(Request $request){
+        $elements = $request->elements;
+
+        $employees = DB::table('employees')->paginate($elements);
+
+        return $employees;
+
+
+    }
 
 }
