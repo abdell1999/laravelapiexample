@@ -73,6 +73,7 @@ class EmployeeController extends Controller
         return $employees;
 
     }
+
     public function pagination(Request $request){
         $elements = $request->elements;
 
@@ -80,6 +81,22 @@ class EmployeeController extends Controller
 
         return $employees;
 
+
+    }
+
+
+    public function searchPaginate(Request $request){
+        $search = $request->search;
+        $elements = $request->elements;
+
+        $employees= DB::table('employees')
+                    ->select('*')
+                    ->where('name', 'LIKE', '%'.$search.'%')
+                    ->orWhere('email', 'LIKE', '%'.$search.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$search.'%')
+                    ->paginate($elements);
+
+        return $employees;
 
     }
 
