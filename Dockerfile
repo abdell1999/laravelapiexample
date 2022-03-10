@@ -1,10 +1,11 @@
 FROM php:8.1-fpm
 
+# copiar composer.lock y composer.json
 COPY composer.lock composer.json /var/www/
 
+# establecer directorio de trabajo
 WORKDIR /var/www
 
-# Install dependencies
 RUN apt-get update \
   && apt-get install -y  \
     curl \
@@ -21,31 +22,30 @@ RUN apt-get update \
     libzip-dev \
   && rm -rf /var/lib/apt/lists/*
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install extensions
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install bcmath
 RUN docker-php-ext-install gd
 
-# Install composer
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+RUN install-php-extensions imagick
+
+# Instalar composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Add user for laravel
+# añadir usuario para la aplicacion laravel
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
 
-# Copy application folder
+# copiar el contenido del directorio de la aplicacion existente
 COPY . /var/www
 
-# Copy existing permissions from folder to docker
+#  copiar  aplicacion y establecer permisos
 COPY --chown=www:www . /var/www
-RUN chown -R www-data:www-data /var/www
 
-# change current user to www
+# cambiar usuario actual a www
 USER www
 
+# abir puerto 9000 y empezar proceso php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]
